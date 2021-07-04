@@ -4,13 +4,13 @@
 
   /*
     TODO
-    - App image dropdown with default options or custom
-    - Contact image dropdown with default options or custom
-    - Device form (locked, datetime)
-    - Click on notification in image to select it
-    - Default app image of placeholder
-    - Save as image
+    - More app image options
+    - Placeholder app image when nothing selected
+    - More contact image options
+    - Device form (locked, datetime, wallpaper)
+    - Download resulting image
     - Compare to screenshot and see what needs to be adjusted
+    - Add notification.media option
   */
 
 
@@ -23,8 +23,8 @@
   };
 
   let defaultNotification = {
-    appImage: "app_mail.png",
-    contactImage: undefined,
+    icon: "app_mail.png",
+    contact: undefined,
     title: "Medium \nStats for your stories",
     description: "Here's a notification description",
     timeAgo: "30m ago",
@@ -34,11 +34,10 @@
   let notifications = [
     {
       id: Math.random().toString(36).substr(2, 9),
-      appImage: "app_messages.png",
-      contactImage: "contact_image.jpg",
+      icon: "app_messages.png",
+      contact: "contact_image.jpg",
       title: "Fabio Giolito",
       description: "Can you bring a big salad? I'm on dessert duty.",
-      timeAgo: "now",
       isStacked: true,
     },
   ];
@@ -134,11 +133,11 @@
             <div class="bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex items-center p-[10px]">
 
               <div class="w-8 h-8 relative mr-[10px]">
-                {#if notification.contactImage}
-                  <img src={notification.contactImage} class="rounded-full w-8 h-8 object-cover" alt="contact">
-                  <img src={notification.appImage || "app_mail.png"} class="rounded-sm absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px]" alt="app">
+                {#if notification.contact}
+                  <img src={notification.contact} class="rounded-full w-8 h-8 object-cover" alt="contact">
+                  <img src={notification.icon || "app_mail.png"} class="rounded absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px] object-cover" alt="app">
                 {:else}
-                  <img src={notification.appImage || "app_mail.png"} class="rounded-lg" alt="app">
+                  <img src={notification.icon || "app_mail.png"} class="rounded-lg object-cover" alt="app">
                 {/if}
               </div>
 

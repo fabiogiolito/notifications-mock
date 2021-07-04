@@ -1,20 +1,25 @@
 <script>
 
   export let label = "";
-  export let btnLabel = "Choose image"
   export let image = "";
+  export let options = [];
+  export let css = "rounded-xl";
 
   let inputFile;
-
-  $: console.log("==== input changed", image);
+  let customImage;
 
   function handleFileChange(e) {
     const [file] = inputFile.files;
-    image = URL.createObjectURL(file);
+    customImage = URL.createObjectURL(file);
+    image = customImage;
   }
 
-  function handleDeleteImage(e) {
-    image = "";
+  function handleSelect(img) {
+    if (image == img) {
+      image = "";
+    } else {
+      image = img;
+    }
   }
 
 </script>
@@ -26,23 +31,39 @@
     <p class="tracking-wide opacity-80 mb-1 select-none">{label}</p>
   {/if}
 
-  <div class="flex space-x-4">
-    <div class="relative flex-1">
-      <span class="inline-block w-full p-2 bg-yellow-500 rounded-lg text-center">{btnLabel}</span>
-      <input type="file" bind:this={inputFile} on:change={handleFileChange} class="absolute inset-0 opacity-0 cursor-pointer" />
-    </div>
+  <div class="flex space-x-1">
 
-    <!-- Delete -->
-    {#if image}
-      <button on:click={handleDeleteImage}>
-        <svg class="inline-block w-5 h-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"></polyline>
-          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-          <line x1="10" y1="11" x2="10" y2="17"></line>
-          <line x1="14" y1="11" x2="14" y2="17"></line>
-        </svg>
+    {#if customImage}
+      <button
+        on:click={() => handleSelect(customImage)}
+        class="border-2 border-transparent ring-2 {css}
+          {image == customImage ? 'ring-yellow-400' : 'ring-gray-700'}
+        "
+        style="font-size: 0px;"
+      >
+        <span class="inline-block w-10 h-10 bg-cover" style="background-image: url('{customImage}');" />
       </button>
     {/if}
+
+    {#each options as option, index}
+      <button
+        on:click={() => handleSelect(option)}
+        class="border-2 border-transparent ring-2 {css}
+          {image == option ? 'ring-yellow-400' : 'ring-gray-700'}
+        "
+        style="font-size: 0px;"
+      >
+        <span class="inline-block w-10 h-10 bg-cover" style="background-image: url('{option}');" />
+      </button>
+    {/each}
+
+    <label class="relative cursor-pointer border-2 border-gray-500 {css}">
+      <div class="w-10 h-10 grid place-items-center">
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <input class="hidden" type="file" bind:this={inputFile} on:change={handleFileChange} />
+    </label>
+
   </div>
 
 </div>
