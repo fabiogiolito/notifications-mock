@@ -25,7 +25,7 @@
 <div>
 
   {#if label}
-    <p class="tracking-wide opacity-80 mb-1">{label}</p>
+    <p class="tracking-wide opacity-80 mb-1 select-none">{label}</p>
   {/if}
 
   <div class="relative overflow-hidden {css}">

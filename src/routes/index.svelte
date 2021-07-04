@@ -1,4 +1,7 @@
 <script>
+  import { slide } from "svelte/transition";
+  import { flip } from 'svelte/animate';
+
   import NotificationForm from "/src/components/NotificationForm.svelte";
 
   let device = {
@@ -7,8 +10,18 @@
     date: "Monday, June 7",
   };
 
+  let defaultNotification = {
+    appImage: "app_mail.png",
+    contactImage: undefined,
+    title: "Medium \nStats for your stories",
+    description: "Here's a notification description",
+    timeAgo: "30m ago",
+    isStacked: false,
+  };
+
   let notifications = [
     {
+      id: Math.random().toString(36).substr(2, 9),
       appImage: "app_messages.png",
       contactImage: "contact_image.jpg",
       title: "Fabio Giolito",
@@ -16,26 +29,39 @@
       timeAgo: "now",
       isStacked: true,
     },
-    {
-      appImage: "app_mail.png",
-      contactImage: undefined,
-      title: "Medium \nStats for your stories",
-      description: "Here's a notification description",
-      timeAgo: "30m ago",
-      isStacked: false,
-    },
   ];
+
+  Array.prototype.move = function (from, to) {
+    this.splice(to, 0, this.splice(from, 1)[0]);
+  };
 
   function toggleLock() {
     device.isLocked = !device.isLocked;
   }
 
-  // function handleInputFileChange(e) {
-  //   const [image] = inputFile.files;
-  //   if (images) {
+  function handleAddNotification() {
+    let newNotification = {...defaultNotification, id: Math.random().toString(36).substr(2, 9)};
+    notifications = [...notifications, newNotification];
+  }
 
-  //   }
-  // }
+  function handleMoveUp(index) {
+    if (index) { // index not first
+      notifications.move(index, index - 1);
+      notifications = notifications;
+    }
+  }
+
+  function handleMoveDown(index) {
+    if (index < notifications.length - 1) { // index not last
+      notifications.move(index, index + 1);
+      notifications = notifications;
+    }
+  }
+
+  function handleDelete(index) {
+    notifications.splice(index, 1);
+    notifications = notifications;
+  }
 
 </script>
 
@@ -78,17 +104,17 @@
       <div class="flex-1 space-y-2">
 
         <!-- Notification group -->
-        {#each notifications as notification}
-        <div>
+        {#each notifications as notification (notification.id)}
+        <div in:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
           <!-- Notification -->
           <div class="bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex items-center p-[10px]">
 
             <div class="w-8 h-8 relative mr-[10px]">
               {#if notification.contactImage}
-                <img src={notification.contactImage} class="rounded-full" alt="contact">
-                <img src={notification.appImage} class="rounded-sm absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px]" alt="app">
+                <img src={notification.contactImage} class="rounded-full w-8 h-8 object-cover" alt="contact">
+                <img src={notification.appImage || "app_mail.png"} class="rounded-sm absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px]" alt="app">
               {:else}
-                <img src={notification.appImage} class="rounded-lg" alt="app">
+                <img src={notification.appImage || "app_mail.png"} class="rounded-lg" alt="app">
               {/if}
             </div>
 
@@ -108,8 +134,8 @@
 
           </div>
           {#if notification.isStacked}
-            <div class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
-            <div class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
+            <div transition:slide={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
+            <div transition:slide={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
           {/if}
         </div>
         {/each}
@@ -138,11 +164,27 @@
     </div>
   </div>
 
-  <div class="bg-gray-800 grid place-items-center overflow-y-auto py-[20vh]">
-    <div class="">
-      {#each notifications as notification}
-      <NotificationForm bind:notification />
+  <!-- =================================== -->
+  <!-- FORMS -->
+  <div class="bg-gray-800 flex flex-col place-items-center overflow-y-auto py-[20vh]">
+    <div>
+      {#each notifications as notification, index (notification.id)}
+        <div transition:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
+          <NotificationForm
+            bind:notification
+            isFirst={index == 0}
+            isLast={index == notifications.length - 1}
+            on:move-up={() => handleMoveUp(index)}
+            on:move-down={() => handleMoveDown(index)}
+            on:delete={() => handleDelete(index)}
+          />
+        </div>
       {/each}
+    </div>
+    <div>
+      <button class="bg-gray-600 hover:bg-gray-500 text-white p-2 px-4 block rounded-lg" on:click={handleAddNotification}>
+        New notification
+      </button>
     </div>
   </div>
 
