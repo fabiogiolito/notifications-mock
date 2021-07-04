@@ -15,7 +15,7 @@
     font: inherit;
     border-radius: inherit;
     white-space: pre-wrap;
-    word-break: break-all;
+    word-break: normal;
     resize: none;
     outline: none;
     overflow: hidden;

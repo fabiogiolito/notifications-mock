@@ -28,7 +28,7 @@
 
   <div class="flex space-x-4">
     <div class="relative flex-1">
-      <span class="inline-block w-full p-2 bg-red-500 rounded-lg text-center">{btnLabel}</span>
+      <span class="inline-block w-full p-2 bg-yellow-500 rounded-lg text-center">{btnLabel}</span>
       <input type="file" bind:this={inputFile} on:change={handleFileChange} class="absolute inset-0 opacity-0 cursor-pointer" />
     </div>
 

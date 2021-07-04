@@ -2,6 +2,18 @@
   import { slide } from "svelte/transition";
   import { flip } from 'svelte/animate';
 
+  /*
+    TODO
+    - App image dropdown with default options or custom
+    - Contact image dropdown with default options or custom
+    - Device form (locked, datetime)
+    - Click on notification in image to select it
+    - Default app image of placeholder
+    - Save as image
+    - Compare to screenshot and see what needs to be adjusted
+  */
+
+
   import NotificationForm from "/src/components/NotificationForm.svelte";
 
   let device = {
@@ -31,6 +43,9 @@
     },
   ];
 
+  let focusedNotification;
+  $: if (notifications.length == 1) focusedNotification = notifications[0].id;
+
   Array.prototype.move = function (from, to) {
     this.splice(to, 0, this.splice(from, 1)[0]);
   };
@@ -42,6 +57,7 @@
   function handleAddNotification() {
     let newNotification = {...defaultNotification, id: Math.random().toString(36).substr(2, 9)};
     notifications = [...notifications, newNotification];
+    focusedNotification = newNotification.id;
   }
 
   function handleMoveUp(index) {
@@ -63,6 +79,14 @@
     notifications = notifications;
   }
 
+  function handleFocus(index) {
+    if (focusedNotification == notifications[index].id) {
+      focusedNotification = "";
+    } else {
+      focusedNotification = notifications[index].id;
+    }
+  }
+
 </script>
 
 <!-- Container -->
@@ -72,7 +96,7 @@
   <div class="grid place-items-center">
 
     <!-- Screen -->
-    <div class="relative w-[375px] h-[812px] bg-cover bg-center rounded-[40px] pt-14 px-[10px] flex flex-col" style="background-image: url('https://9to5mac.com/wp-content/uploads/sites/6/2021/06/1881.WWDC_2021_Light-428w-926h@3xiphone.jpg?quality=82&strip=all')">
+    <div class="relative w-[375px] h-[812px] bg-cover bg-center pt-14 px-[10px] flex flex-col overflow-hidden" style="background-image: url('https://9to5mac.com/wp-content/uploads/sites/6/2021/06/1881.WWDC_2021_Light-428w-926h@3xiphone.jpg?quality=82&strip=all')">
 
       <!-- =================================== -->
       <!-- Top section -->
@@ -104,40 +128,40 @@
       <div class="flex-1 space-y-2">
 
         <!-- Notification group -->
-        {#each notifications as notification (notification.id)}
-        <div in:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
-          <!-- Notification -->
-          <div class="bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex items-center p-[10px]">
+        {#each notifications as notification, index (notification.id)}
+          <button class="text-left w-full" on:click={() => handleFocus(index)} in:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
+            <!-- Notification -->
+            <div class="bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex items-center p-[10px]">
 
-            <div class="w-8 h-8 relative mr-[10px]">
-              {#if notification.contactImage}
-                <img src={notification.contactImage} class="rounded-full w-8 h-8 object-cover" alt="contact">
-                <img src={notification.appImage || "app_mail.png"} class="rounded-sm absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px]" alt="app">
-              {:else}
-                <img src={notification.appImage || "app_mail.png"} class="rounded-lg" alt="app">
-              {/if}
-            </div>
-
-            <div class="flex-1">
-              <div class="flex items-start mb-[2px]">
-                <p class="text-black text-opacity-75 flex-1 font-semibold text-[15px] whitespace-pre-wrap leading-tight">
-                  {notification.title || "Notification title"}
-                </p>
-                <p class="text-black text-opacity-30 text-[13px]">{notification.timeAgo || "now"}</p>
+              <div class="w-8 h-8 relative mr-[10px]">
+                {#if notification.contactImage}
+                  <img src={notification.contactImage} class="rounded-full w-8 h-8 object-cover" alt="contact">
+                  <img src={notification.appImage || "app_mail.png"} class="rounded-sm absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px]" alt="app">
+                {:else}
+                  <img src={notification.appImage || "app_mail.png"} class="rounded-lg" alt="app">
+                {/if}
               </div>
-              {#if notification.description}
-                <p class="leading-tight text-[15px] text-black text-opacity-60 whitespace-pre-wrap">
-                  {notification.description}
-                </p>
-              {/if}
-            </div>
 
-          </div>
-          {#if notification.isStacked}
-            <div transition:slide={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
-            <div transition:slide={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
-          {/if}
-        </div>
+              <div class="flex-1">
+                <div class="flex items-start mb-[2px]">
+                  <p class="text-black text-opacity-75 flex-1 font-semibold text-[15px] whitespace-pre-wrap leading-tight">
+                    {notification.title || "Notification title"}
+                  </p>
+                  <p class="text-black text-opacity-30 text-[13px]">{notification.timeAgo || "now"}</p>
+                </div>
+                {#if notification.description}
+                  <p class="leading-tight text-[15px] text-black text-opacity-60 whitespace-pre-wrap">
+                    {notification.description}
+                  </p>
+                {/if}
+              </div>
+
+            </div>
+            {#if notification.isStacked}
+              <div transition:slide={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
+              <div transition:slide={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
+            {/if}
+          </button>
         {/each}
 
       </div>
@@ -166,26 +190,31 @@
 
   <!-- =================================== -->
   <!-- FORMS -->
-  <div class="bg-gray-800 flex flex-col place-items-center overflow-y-auto py-[20vh]">
-    <div>
+  <div class="bg-gray-800 flex flex-col place-items-center py-[20vh] scrollbar scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-600">
+
+    <div class="w-100">
+
       {#each notifications as notification, index (notification.id)}
         <div transition:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
           <NotificationForm
             bind:notification
             isFirst={index == 0}
             isLast={index == notifications.length - 1}
+            isFocused={focusedNotification == notification.id}
             on:move-up={() => handleMoveUp(index)}
             on:move-down={() => handleMoveDown(index)}
             on:delete={() => handleDelete(index)}
+            on:focus={() => handleFocus(index)}
           />
         </div>
       {/each}
-    </div>
-    <div>
-      <button class="bg-gray-600 hover:bg-gray-500 text-white p-2 px-4 block rounded-lg" on:click={handleAddNotification}>
+
+      <button class="block w-full bg-gray-700 bg-opacity-50 hover:bg-opacity-90 p-4 uppercase text-white text-left text-xs font-semibold opacity-50 select-none" on:click={handleAddNotification}>
         New notification
       </button>
+
     </div>
+
   </div>
 
 </div>
