@@ -20,7 +20,6 @@
   }
 
   function handleSaveImage() {
-
     domtoimage.toBlob(container)
     .then(function (blob) {
       console.log(blob);

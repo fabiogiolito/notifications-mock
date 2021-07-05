@@ -26,9 +26,24 @@
   $: if (timeAgo || timeAgo === "") notification.timeAgo = timeAgo;
   $: if (isStacked || isStacked === false) notification.isStacked = isStacked;
 
+
+  let appIcons = [
+    "app_twitter.png",
+    "app_messages.png",
+    "app_tiktok.png",
+    "app_mail.png",
+  ];
+
+  let contactImages = [
+    "contact_1.png",
+    "contact_2.png",
+    "contact_3.png",
+    "contact_4.png",
+  ];
+
 </script>
 
-<div class="bg-white bg-opacity-10 text-white w-80 space-y-4 border-b border-gray-800">
+<div class="bg-white bg-opacity-10 text-white w-full space-y-4 border-b border-gray-800">
 
   <div class="flex items-center">
     <button on:click={() => dispatch('focus')} class="p-4 flex-1 uppercase text-left text-xs font-semibold opacity-50 select-none">
@@ -56,9 +71,9 @@
     <div transition:slide class="p-4 pt-0 space-y-4">
       <Input label="Title" bind:value={title} multiline />
       <Input label="Description" bind:value={description} multiline />
-      <Input label="Time ago" bind:value={timeAgo} />
-      <File label="App image" bind:image={icon} options={["app_messages.png", "app_mail.png"]} />
-      <File label="Contact image" bind:image={contact} options={["contact_image.jpg"]} />
+      <Input label="Time ago" placeholder="now" bind:value={timeAgo} />
+      <File label="App image" bind:image={icon} options={appIcons} uploadedImage={!appIcons.includes(icon) && icon} />
+      <File label="Contact image" bind:image={contact} options={contactImages} css="rounded-full" uploadedImage={!contactImages.includes(contact) && contact} />
       <label class="flex items-center space-x-2 select-none"><input type="checkbox" bind:checked={isStacked} /> <span>Stacked notification</span></label>
     </div>
   {/if}

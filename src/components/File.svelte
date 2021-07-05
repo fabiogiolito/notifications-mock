@@ -4,9 +4,12 @@
   export let image = "";
   export let options = [];
   export let css = "rounded-xl";
+  export let uploadedImage;
 
   let inputFile;
   let customImage;
+
+  $: if (uploadedImage) customImage = uploadedImage;
 
   function handleFileChange(e) {
     const [file] = inputFile.files;

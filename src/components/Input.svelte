@@ -3,6 +3,7 @@
   export let label;
   export let value;
   export let css = "p-2 px-3 bg-white text-gray-700 rounded-lg border";
+  export let placeholder = "";
 </script>
 
 <style>
@@ -30,9 +31,9 @@
 
   <div class="relative overflow-hidden {css}">
     {#if multiline}
-      <textarea bind:value class="absolute inset-0 w-full h-full"></textarea>
+      <textarea bind:value class="absolute inset-0 w-full h-full" {placeholder}></textarea>
     {:else}
-      <input type="text" bind:value class="absolute inset-0 w-full h-full" />
+      <input type="text" bind:value class="absolute inset-0 w-full h-full" {placeholder} />
     {/if}
     <span class="opacity-0 pointer-events-none whitespace-pre-wrap break-words">{value}_</span>
   </div>

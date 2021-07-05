@@ -1,6 +1,8 @@
 <script>
   import { slide } from "svelte/transition";
   import { flip } from 'svelte/animate';
+  import { saveAs } from 'file-saver';
+  import domtoimage from 'dom-to-image';
 
   /*
     TODO
@@ -13,7 +15,6 @@
     - Add notification.media option
   */
 
-
   import NotificationForm from "/src/components/NotificationForm.svelte";
 
   let device = {
@@ -24,24 +25,23 @@
 
   let defaultNotification = {
     icon: "app_mail.png",
-    contact: undefined,
     title: "Medium \nStats for your stories",
-    description: "Here's a notification description",
+    description: "Your weekly writer summary",
     timeAgo: "30m ago",
-    isStacked: false,
+    isStacked: true,
   };
 
   let notifications = [
     {
       id: Math.random().toString(36).substr(2, 9),
-      icon: "app_messages.png",
-      contact: "contact_image.jpg",
-      title: "Fabio Giolito",
-      description: "Can you bring a big salad? I'm on dessert duty.",
-      isStacked: true,
+      icon: "app_twitter.png",
+      contact: "contact_1.png",
+      title: "Fabio Giolito (@fabiogiolito)",
+      description: "Hey, I made a thing to create notification mockups.",
     },
   ];
 
+  let screen;
   let focusedNotification;
   $: if (notifications.length == 1) focusedNotification = notifications[0].id;
 
@@ -86,6 +86,13 @@
     }
   }
 
+  function handleSaveImage() {
+    domtoimage.toBlob(screen)
+    .then(function (blob) {
+      saveAs(blob, 'notifications.png');
+    });
+  }
+
 </script>
 
 <!-- Container -->
@@ -95,11 +102,13 @@
   <div class="grid place-items-center">
 
     <!-- Screen -->
-    <div class="relative w-[375px] h-[812px] bg-cover bg-center pt-14 px-[10px] flex flex-col overflow-hidden" style="background-image: url('https://9to5mac.com/wp-content/uploads/sites/6/2021/06/1881.WWDC_2021_Light-428w-926h@3xiphone.jpg?quality=82&strip=all')">
+    <div bind:this={screen} class="relative w-[375px] h-[812px] pt-14 px-[10px] flex flex-col overflow-hidden">
+      <!-- Wallpaper -->
+      <img src="wallpaper_1.jpg" class="absolute inset-0 z-10 w-full h-full object-cover" alt="wallpaper" />
 
       <!-- =================================== -->
       <!-- Top section -->
-      <div class="text-white text-center flex flex-col items-center justify-center space-y-2 mb-6">
+      <div class="relative z-20 text-white text-center flex flex-col items-center justify-center space-y-2 mb-6">
 
         <!-- Lock -->
         <button on:click={toggleLock}>
@@ -124,7 +133,7 @@
 
       <!-- =================================== -->
       <!-- Notifications list -->
-      <div class="flex-1 space-y-2">
+      <div class="relative z-20 flex-1 space-y-2">
 
         <!-- Notification group -->
         {#each notifications as notification, index (notification.id)}
@@ -135,9 +144,9 @@
               <div class="w-8 h-8 relative mr-[10px]">
                 {#if notification.contact}
                   <img src={notification.contact} class="rounded-full w-8 h-8 object-cover" alt="contact">
-                  <img src={notification.icon || "app_mail.png"} class="rounded absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px] object-cover" alt="app">
+                  <img src={notification.icon || "app_icon.png"} class="rounded absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px] object-cover" alt="app">
                 {:else}
-                  <img src={notification.icon || "app_mail.png"} class="rounded-lg object-cover" alt="app">
+                  <img src={notification.icon || "app_icon.png"} class="rounded-lg object-cover" alt="app">
                 {/if}
               </div>
 
@@ -157,17 +166,17 @@
 
             </div>
             {#if notification.isStacked}
-              <div transition:slide={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
-              <div transition:slide={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
+              <div transition:slide|local={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
+              <div transition:slide|local={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
             {/if}
           </button>
         {/each}
 
-      </div>
+      </div>c
 
       <!-- =================================== -->
       <!-- Status bar -->
-      <div class="absolute top-0 inset-x-0 text-white">
+      <div class="absolute top-0 inset-x-0 z-20 text-white">
         <svg width="375" height="44" viewBox="0 0 375 44" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path opacity="0.35" d="M338.667 17.8334H355.333C356.53 17.8334 357.5 18.8034 357.5 20V26C357.5 27.1967 356.53 28.1667 355.333 28.1667H338.667C337.47 28.1667 336.5 27.1967 336.5 26V20C336.5 18.8034 337.47 17.8334 338.667 17.8334Z" stroke="currentColor"/>
           <path opacity="0.4" d="M359 21V25C359.805 24.6613 360.328 23.8732 360.328 23C360.328 22.1269 359.805 21.3388 359 21" fill="currentColor"/>
@@ -180,7 +189,7 @@
 
       <!-- =================================== -->
       <!-- Home indicator -->
-      <div class="absolute bottom-0 inset-x-0 p-2 text-white">
+      <div class="absolute bottom-0 inset-x-0 z-20 p-2 text-white">
         <div class="w-[134px] h-[5px] bg-current rounded-full mx-auto" />
       </div>
 
@@ -189,9 +198,13 @@
 
   <!-- =================================== -->
   <!-- FORMS -->
-  <div class="bg-gray-800 flex flex-col place-items-center py-[20vh] scrollbar scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-600">
+  <div class="bg-gray-800 flex flex-col place-items-center pt-[20vh] pb-[5vh] scrollbar scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-600">
 
-    <div class="w-100">
+    <div class="w-80 mb-10">
+      <button on:click={handleSaveImage} class="bg-yellow-500 p-3 rounded-lg block w-full">Save</button>
+    </div>
+
+    <div class="w-80 max-h-[80vh]">
 
       {#each notifications as notification, index (notification.id)}
         <div transition:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
@@ -208,8 +221,9 @@
         </div>
       {/each}
 
-      <button class="block w-full bg-gray-700 bg-opacity-50 hover:bg-opacity-90 p-4 uppercase text-white text-left text-xs font-semibold opacity-50 select-none" on:click={handleAddNotification}>
-        New notification
+      <button class="flex space-x-2 w-full bg-gray-700 bg-opacity-50 hover:bg-opacity-90 p-4 uppercase text-white text-left text-xs font-semibold opacity-50 select-none" on:click={handleAddNotification}>
+        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>New notification</span>
       </button>
 
     </div>
