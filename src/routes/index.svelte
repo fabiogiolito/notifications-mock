@@ -95,6 +95,10 @@
 
 </script>
 
+<div class="fixed top-0 right-0 m-6">
+  <button on:click={handleSaveImage} class="bg-yellow-500 p-3 px-6 rounded-lg block w-full">Save as image</button>
+</div>
+
 <!-- Container -->
 <div class="w-screen h-screen overflow-hidden grid grid-cols-2">
 
@@ -199,10 +203,6 @@
   <!-- =================================== -->
   <!-- FORMS -->
   <div class="bg-gray-800 flex flex-col place-items-center pt-[20vh] pb-[5vh] scrollbar scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-600">
-
-    <div class="w-80 mb-10">
-      <button on:click={handleSaveImage} class="bg-yellow-500 p-3 rounded-lg block w-full">Save</button>
-    </div>
 
     <div class="w-80 max-h-[80vh]">
 

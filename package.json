@@ -20,6 +20,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sveltejs/adapter-vercel": "next",
 		"dom-to-image": "^2.6.0",
 		"file-saver": "^2.0.5"
 	}
