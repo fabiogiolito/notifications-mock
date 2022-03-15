@@ -4,17 +4,6 @@
   import { saveAs } from 'file-saver';
   import domtoimage from 'dom-to-image';
 
-  /*
-    TODO
-    - More app image options
-    - Placeholder app image when nothing selected
-    - More contact image options
-    - Device form (locked, datetime, wallpaper)
-    - Download resulting image
-    - Compare to screenshot and see what needs to be adjusted
-    - Add notification.media option
-  */
-
   import NotificationForm from "/src/components/NotificationForm.svelte";
 
   let device = {
@@ -40,6 +29,10 @@
       description: "Hey, I made a thing to create notification mockups.",
     },
   ];
+
+  const date = new Date();
+  let useCustomTime = false;
+  let useCustomDate = true;
 
   let screen;
   let focusedNotification;
@@ -93,6 +86,18 @@
     });
   }
 
+  function printTime() {
+    return `${date.getHours()}:${date.getMinutes()}`
+  }
+
+  function printDate() {
+    return `${date.toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    })}`
+  }
+
 </script>
 
 <!-- <div class="fixed top-0 right-0 m-6">
@@ -130,8 +135,12 @@
         </button>
 
         <!-- Date Time -->
-        <p class="leading-none text-[83px] font-extralight">{device.time}</p>
-        <p class="leading-none text-[22px] font-light">{device.date}</p>
+        <p on:click={e => useCustomTime = !useCustomTime} class="cursor-pointer leading-none text-[83px] w-full font-extralight">
+          {useCustomTime ? printTime() : device.time}
+        </p>
+        <p on:click={e => useCustomDate = !useCustomDate} class="cursor-pointer leading-none text-[22px] w-full font-light">
+          {useCustomDate ? printDate() : device.date}
+        </p>
 
       </div>
 
