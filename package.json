@@ -8,19 +8,19 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^1.0.0-next.0",
-		"@sveltejs/kit": "next",
-		"autoprefixer": "^10.2.6",
-		"cssnano": "^5.0.6",
-		"postcss": "^8.3.5",
-		"postcss-load-config": "^3.1.0",
-		"svelte": "^3.34.0",
-		"svelte-preprocess": "^4.7.3",
+		"@sveltejs/kit": "^1.0.0-next.297",
+		"autoprefixer": "^10.4.2",
+		"cssnano": "^5.1.4",
+		"postcss": "^8.4.8",
+		"postcss-load-config": "^3.1.3",
+		"svelte": "^3.46.4",
+		"svelte-preprocess": "^4.10.4",
 		"tailwind-scrollbar": "^1.3.1",
-		"tailwindcss": "^2.2.4"
+		"tailwindcss": "^3.0.23"
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-vercel": "next",
+		"@sveltejs/adapter-vercel": "^1.0.0-next.47",
 		"dom-to-image": "^2.6.0",
 		"file-saver": "^2.0.5"
 	}
