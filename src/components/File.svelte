@@ -51,7 +51,7 @@
     {#each options as option, index}
       <button
         on:click={() => handleSelect(option)}
-        class="border-2 border-transparent ring-2 {css}
+        class="border-2 border-transparent ring-2 overflow-hidden {css}
           {image == option ? 'ring-yellow-400' : 'ring-gray-700'}
         "
         style="font-size: 0px;"
