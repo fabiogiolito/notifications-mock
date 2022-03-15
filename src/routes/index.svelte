@@ -95,9 +95,9 @@
 
 </script>
 
-<div class="fixed top-0 right-0 m-6">
-  <button on:click={handleSaveImage} class="bg-yellow-500 p-3 px-6 rounded-lg block w-full">Save as image</button>
-</div>
+<!-- <div class="fixed top-0 right-0 m-6">
+  <button on:click={handleSaveImage} class="bg-yellow-500 p-3 px-6 rounded-lg block w-full font-medium">Save as image</button>
+</div> -->
 
 <!-- Container -->
 <div class="w-screen h-screen overflow-hidden grid grid-cols-2">
