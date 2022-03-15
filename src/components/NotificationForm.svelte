@@ -74,7 +74,10 @@
       <Input label="Time ago" placeholder="now" bind:value={timeAgo} />
       <File label="App image" bind:image={icon} options={appIcons} uploadedImage={!appIcons.includes(icon) && icon} />
       <File label="Contact image" bind:image={contact} options={contactImages} css="rounded-full" uploadedImage={!contactImages.includes(contact) && contact} />
-      <label class="flex items-center space-x-2 select-none"><input type="checkbox" bind:checked={isStacked} /> <span>Stacked notification</span></label>
+      <label class="flex items-center space-x-2 select-none">
+        <input class="accent-yellow-500" type="checkbox" bind:checked={isStacked} />
+        <span>Stacked notification</span>
+      </label>
     </div>
   {/if}
 
