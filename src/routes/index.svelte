@@ -4,31 +4,52 @@
   import { saveAs } from 'file-saver';
   import domtoimage from 'dom-to-image';
 
+  import Nav from "/src/components/Nav.svelte";
   import NotificationForm from "/src/components/NotificationForm.svelte";
 
   let device = {
-    isLocked: false,
     time: "9:41",
-    date: "Monday, June 7",
+    date: "Monday, June 6",
   };
 
-  let defaultNotification = {
+  let defaultNotifications = [{
+    appName: "Mail",
     icon: "app_mail.png",
-    title: "Medium \nStats for your stories",
-    description: "Your weekly writer summary",
+    title: "Medium",
+    description: "Stats for your stories",
     timeAgo: "30m ago",
-    isStacked: true,
-  };
+  },{
+    appName: "Messages",
+    icon: "app_messages.png",
+    title: "Graham Clarke",
+    description: "Call me when you have the chance.",
+    timeAgo: "30m ago",
+  },{
+    appName: "TokTok",
+    icon: "app_tiktok.png",
+    title: "TikTok",
+    description: "Your video went viral!",
+    timeAgo: "30m ago",
+  },{
+    appName: "Twitter",
+    icon: "app_twitter.png",
+    title: "Twitter",
+    description: "You have a new follower.",
+    timeAgo: "30m ago",
+  },];
 
   let notifications = [
     {
       id: Math.random().toString(36).substr(2, 9),
+      appName: "Twitter",
       icon: "app_twitter.png",
       contact: "contact_1.png",
       title: "Fabio Giolito (@fabiogiolito)",
       description: "Hey, I made a thing to create notification mockups.",
     },
   ];
+
+  let widgetType = 'small';
 
   const date = new Date();
   let useCustomTime = false;
@@ -42,12 +63,22 @@
     this.splice(to, 0, this.splice(from, 1)[0]);
   };
 
-  function toggleLock() {
-    device.isLocked = !device.isLocked;
+  function countMoreNotificationsText(notifications) {
+    let text = `${notifications.length - 2} more from `;
+    let appNames = [...new Set(notifications.slice(2).map(n => n.appName))];
+    if (appNames.length > 3) {
+      text += `${appNames.slice(0,2).join(', ')} and more`;
+    } else if (appNames.length > 1) {
+      let lastAppName = appNames.pop();
+      text += `${appNames.slice(0,2).join(', ')} and ${lastAppName}`;
+    } else {
+      text += appNames[0];
+    }
+    return text;
   }
 
   function handleAddNotification() {
-    let newNotification = {...defaultNotification, id: Math.random().toString(36).substr(2, 9)};
+    let newNotification = {...defaultNotifications[Math.floor(Math.random() * defaultNotifications.length)], id: Math.random().toString(36).substr(2, 9)};
     notifications = [...notifications, newNotification];
     focusedNotification = newNotification.id;
   }
@@ -79,13 +110,6 @@
     }
   }
 
-  function handleSaveImage() {
-    domtoimage.toBlob(screen)
-    .then(function (blob) {
-      saveAs(blob, 'notifications.png');
-    });
-  }
-
   function printTime() {
     return `${date.getHours()}:${date.getMinutes()}`
   }
@@ -96,7 +120,7 @@
       month: 'long',
       day: 'numeric'
     })}`
-  }
+}
 
 </script>
 
@@ -105,87 +129,126 @@
 </div> -->
 
 <!-- Container -->
-<div class="w-screen h-screen overflow-hidden grid grid-cols-2">
+<div class="flex-1 overflow-hidden grid grid-cols-2">
 
   <!-- Device border -->
-  <div class="grid place-items-center">
+  <div class="grid place-items-center select-none">
 
     <!-- Screen -->
-    <div bind:this={screen} class="relative w-[375px] h-[812px] pt-14 px-[10px] flex flex-col overflow-hidden">
+    <div bind:this={screen} class="relative w-[375px] h-[812px] pt-20 pb-16 px-[10px] flex flex-col overflow-hidden">
       <!-- Wallpaper -->
-      <img src="wallpaper_1.jpg" class="absolute inset-0 z-10 w-full h-full object-cover" alt="wallpaper" />
+      <img src="wallpaper-16.png" srcset="wallpaper-16.png 1x, wallpaper-16@2x.png 2x" class="absolute inset-0 z-10 w-full h-full object-cover" alt="wallpaper" />
 
       <!-- =================================== -->
       <!-- Top section -->
       <div class="relative z-20 text-white text-center flex flex-col items-center justify-center space-y-2 mb-6">
 
-        <!-- Lock -->
-        <button on:click={toggleLock}>
-          {#if device.isLocked}
-            <svg width="64" height="40" viewBox="0 0 64 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 21.5C20 19.8431 21.3431 18.5 23 18.5H41C42.6569 18.5 44 19.8431 44 21.5V36.5C44 38.1569 42.6569 39.5 41 39.5H23C21.3431 39.5 20 38.1569 20 36.5V21.5Z" />
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M32 5.5C28.8265 5.5 26 8.09216 26 11V23C26 23.8284 25.3284 24.5 24.5 24.5C23.6716 24.5 23 23.8284 23 23V11C23 6.17586 27.4415 2.5 32 2.5C36.5585 2.5 41 6.17586 41 11V23C41 23.8284 40.3284 24.5 39.5 24.5C38.6716 24.5 38 23.8284 38 23V11C38 8.09216 35.1735 5.5 32 5.5Z" />
-            </svg>
-          {:else}
-            <svg width="64" height="40" viewBox="0 0 64 40" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 21.5C20 19.8431 21.3431 18.5 23 18.5H41C42.6569 18.5 44 19.8431 44 21.5V36.5C44 38.1569 42.6569 39.5 41 39.5H23C21.3431 39.5 20 38.1569 20 36.5V21.5Z" />
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M47 3.5C43.8265 3.5 41 6.09216 41 9V21C41 21.8284 40.3284 22.5 39.5 22.5C38.6716 22.5 38 21.8284 38 21V9C38 4.17586 42.4415 0.5 47 0.5C51.5585 0.5 56 4.17586 56 9V16C56 16.8284 55.3284 17.5 54.5 17.5C53.6716 17.5 53 16.8284 53 16V9C53 6.09216 50.1735 3.5 47 3.5Z" />
-            </svg>
-          {/if}
-        </button>
-
         <!-- Date Time -->
-        <p on:click={e => useCustomTime = !useCustomTime} class="cursor-pointer leading-none text-[83px] w-full font-extralight">
-          {useCustomTime ? printTime() : device.time}
-        </p>
-        <p on:click={e => useCustomDate = !useCustomDate} class="cursor-pointer leading-none text-[22px] w-full font-light">
+        <p on:click={e => useCustomDate = !useCustomDate} class="cursor-pointer leading-none text-[18px] w-full font-medium">
           {useCustomDate ? printDate() : device.date}
         </p>
+        <p on:click={e => useCustomTime = !useCustomTime} class="cursor-pointer leading-none text-[83px] w-full font-medium">
+          {useCustomTime ? printTime() : device.time}
+        </p>
+
+        {#if widgetType == 'small'}
+          <img src="widgets_small.svg" alt="widgets" />
+        {:else if widgetType == 'mixed'}
+          <img src="widgets_mixed.svg" alt="widgets" />
+        {/if}
 
       </div>
 
+      <!-- Spacer -->
+      <span class="flex-1" />
+
       <!-- =================================== -->
       <!-- Notifications list -->
-      <div class="relative z-20 flex-1 space-y-2">
+      <div class="relative z-20 flex flex-col pb-16">
 
         <!-- Notification group -->
-        {#each notifications as notification, index (notification.id)}
-          <button class="text-left w-full" on:click={() => handleFocus(index)} in:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
+        {#each notifications.slice(0,3) as notification, index (notification.id)}
+          <button
+            class="text-left w-full relative transform origin-bottom transition-transform
+              {index == 1 ? 'scale-90 -mt-7' : ''}
+              {index == 2 ? 'scale-75 -mt-8' : ''}
+            "
+            style="z-index: {100 - index};"
+            on:click={() => handleFocus(index)}
+            in:slide={{ duration: 200 }}
+            animate:flip={{ duration: 200 }}
+          >
             <!-- Notification -->
-            <div class="bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex items-center p-[10px]">
+            <div class="
+              bg-[#f5f5f5] bg-opacity-60 backdrop-blur-lg rounded-2xl flex p-[10px]
+              {index == 0 ? 'items-center' : 'items-end'}
+            ">
 
-              <div class="w-8 h-8 relative mr-[10px]">
-                {#if notification.contact}
-                  <img src={notification.contact} class="rounded-full w-8 h-8 object-cover" alt="contact">
-                  <img src={notification.icon || "app_icon.png"} class="rounded absolute bottom-[-2px] right-[-4px] w-[14px] h-[14px] object-cover" alt="app">
-                {:else}
-                  <img src={notification.icon || "app_icon.png"} class="rounded-lg object-cover" alt="app">
-                {/if}
-              </div>
-
-              <div class="flex-1">
-                <div class="flex items-start mb-[2px]">
-                  <p class="text-black text-opacity-75 flex-1 font-semibold text-[15px] whitespace-pre-wrap leading-tight">
-                    {notification.title || "Notification title"}
-                  </p>
-                  <p class="text-black text-opacity-30 text-[13px]">{notification.timeAgo || "now"}</p>
+              <!-- Image -->
+              {#if index < 2}
+                <div class="w-10 h-10 relative mr-[10px] flex-shrink-0">
+                  {#if notification.contact}
+                    <img src={notification.contact} class="rounded-full w-10 h-10 object-cover" alt="contact">
+                    <img src={notification.icon || "app_icon.png"} class="rounded absolute bottom-[-2px] right-[-4px] w-4 h-4 object-cover" alt="app">
+                  {:else}
+                    <img src={notification.icon || "app_icon.png"} class="rounded-lg object-cover" alt="app">
+                  {/if}
                 </div>
-                {#if notification.description}
-                  <p class="leading-tight text-[15px] text-black text-opacity-60 whitespace-pre-wrap">
-                    {notification.description}
-                  </p>
-                {/if}
-              </div>
+              {/if}
+
+              <!-- Text -->
+              {#if index == 0}
+                <div class="flex-1">
+                  <div class="flex items-start mb-[2px]">
+                    <p class="text-black text-opacity-75 flex-1 font-semibold text-[15px] whitespace-pre-wrap leading-tight">
+                      {notification.title || "Notification title"}
+                    </p>
+                    <p class="text-black text-opacity-30 text-[13px]">{notification.timeAgo || "now"}</p>
+                  </div>
+                  {#if notification.description}
+                    <p class="leading-tight text-[15px] text-black text-opacity-60 whitespace-pre-wrap">
+                      {notification.description}
+                    </p>
+                  {/if}
+                </div>
+
+              {:else if index == 1}
+                <div class="flex-1 whitespace-nowrap truncate mr-2">
+                  <span class="text-black text-opacity-75 flex-1 font-semibold text-[15px] leading-tight">
+                    {notification.title || "Notification title"}
+                  </span>
+                  {#if notification.description}
+                    <span class="leading-tight text-[15px] text-black text-opacity-60 truncate">
+                      {notification.description}
+                    </span>
+                  {/if}
+                </div>
+                <span class="whitespace-nowrap text-black text-opacity-30 text-[13px]">{notification.timeAgo || "now"}</span>
+              {:else}
+                <div class="flex-1 pt-4 font-medium text-center truncate opacity-80">
+                  {countMoreNotificationsText(notifications)}
+                </div>
+              {/if}
 
             </div>
-            {#if notification.isStacked}
-              <div transition:slide|local={{ duration: 200 }} class="h-2 mx-4 rounded-b-2xl bg-[#f5f5f5] bg-opacity-40 backdrop-blur-lg" />
-              <div transition:slide|local={{ duration: 200 }} class="h-2 mx-8 rounded-b-2xl bg-[#f5f5f5] bg-opacity-20 backdrop-blur-lg" />
-            {/if}
           </button>
         {/each}
 
-      </div>c
+
+        <!-- Shortcut buttons -->
+        <div class="absolute left-0 -bottom-2 w-full flex justify-between px-10">
+          <div class="bg-black bg-opacity-25 backdrop-blur-lg rounded-full">
+            <svg width="48" height="49" viewBox="0 0 48 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.6244 34.8574H24.9681C25.5541 34.8574 25.9935 34.7077 26.2865 34.4082C26.586 34.1087 26.7357 33.653 26.7357 33.041V22.6699C26.7357 22.1556 26.7911 21.7096 26.9017 21.332C27.0124 20.9544 27.1622 20.6224 27.351 20.3359L27.9857 19.3984C28.2071 19.0534 28.3861 18.7083 28.5228 18.3633C28.6661 18.0182 28.7377 17.6374 28.7377 17.2207V16.4199H18.8549V17.2207C18.8549 17.6374 18.9232 18.0182 19.0599 18.3633C19.1967 18.7083 19.3789 19.0534 19.6068 19.3984L20.2318 20.3359C20.4206 20.6224 20.5704 20.9544 20.681 21.332C20.7917 21.7096 20.847 22.1556 20.847 22.6699V33.041C20.847 33.653 20.9968 34.1087 21.2963 34.4082C21.5957 34.7077 22.0385 34.8574 22.6244 34.8574ZM23.7963 27.3477C23.3991 27.3477 23.0801 27.2174 22.8392 26.957C22.5983 26.6901 22.4779 26.3516 22.4779 25.9414V23.2656C22.4779 22.8555 22.5983 22.5234 22.8392 22.2695C23.0801 22.0156 23.3991 21.8919 23.7963 21.8984C24.1934 21.9049 24.5124 22.0352 24.7533 22.2891C24.9942 22.5365 25.1146 22.862 25.1146 23.2656V25.9414C25.1146 26.3516 24.9942 26.6901 24.7533 26.957C24.5124 27.2174 24.1934 27.3477 23.7963 27.3477ZM23.7963 26.6543C24.0111 26.6543 24.1967 26.5762 24.3529 26.4199C24.5157 26.2637 24.597 26.0749 24.597 25.8535C24.597 25.6387 24.5157 25.4499 24.3529 25.2871C24.1967 25.1243 24.0111 25.043 23.7963 25.043C23.5814 25.043 23.3926 25.1243 23.2299 25.2871C23.0671 25.4499 22.9857 25.6387 22.9857 25.8535C22.9857 26.0749 23.0671 26.2637 23.2299 26.4199C23.3926 26.5762 23.5814 26.6543 23.7963 26.6543ZM18.8549 15.2773H28.7377V14.8086C28.7377 14.1901 28.5879 13.7344 28.2885 13.4414C27.989 13.1419 27.5463 12.9922 26.9603 12.9922H20.6322C20.0463 12.9922 19.6036 13.1419 19.3041 13.4414C19.0046 13.7344 18.8549 14.1901 18.8549 14.8086V15.2773Z" fill="white"/>
+            </svg>
+          </div>
+          <div class="bg-black bg-opacity-50 backdrop-blur-lg rounded-full">
+            <svg width="49" height="49" viewBox="0 0 49 49" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.4292 31H31.5708C32.3754 31 32.9814 30.7955 33.3888 30.3865C33.7963 29.9827 34 29.3744 34 28.5616V20.3262C34 19.5186 33.7963 18.913 33.3888 18.5092C32.9814 18.1002 32.3754 17.8956 31.5708 17.8956H29.3583C29.152 17.8956 28.987 17.8799 28.8632 17.8485C28.7394 17.817 28.6285 17.7646 28.5305 17.6911C28.4377 17.6125 28.332 17.5076 28.2134 17.3765L27.5945 16.6686C27.4036 16.4536 27.1922 16.2884 26.9601 16.173C26.728 16.0577 26.4134 16 26.0163 16H22.9296C22.5324 16 22.2178 16.0577 21.9857 16.173C21.7588 16.2884 21.5474 16.4536 21.3514 16.6686L20.7325 17.3765C20.5623 17.5705 20.405 17.7069 20.2606 17.7855C20.1162 17.8589 19.8918 17.8956 19.5875 17.8956H17.4292C16.6194 17.8956 16.0109 18.1002 15.6034 18.5092C15.2011 18.913 15 19.5186 15 20.3262V28.5616C15 29.3744 15.2011 29.9827 15.6034 30.3865C16.0109 30.7955 16.6194 31 17.4292 31ZM24.5 28.6796C23.9121 28.6796 23.3628 28.5695 22.8522 28.3492C22.3416 28.129 21.8929 27.8222 21.5061 27.4289C21.1245 27.0357 20.8227 26.5794 20.601 26.0603C20.3844 25.5412 20.2761 24.9801 20.2761 24.377C20.2761 23.7792 20.3844 23.2208 20.601 22.7016C20.8227 22.1825 21.1245 21.7263 21.5061 21.333C21.8929 20.9397 22.3416 20.6329 22.8522 20.4127C23.3628 20.1924 23.9121 20.0823 24.5 20.0823C25.2788 20.0823 25.9879 20.2737 26.6274 20.6565C27.267 21.0393 27.775 21.5558 28.1515 22.2061C28.528 22.8563 28.7162 23.58 28.7162 24.377C28.7162 24.9801 28.6079 25.5412 28.3913 26.0603C28.1747 26.5794 27.873 27.0357 27.4862 27.4289C27.0993 27.8222 26.6507 28.129 26.1401 28.3492C25.6295 28.5695 25.0828 28.6796 24.5 28.6796ZM24.5 27.484C25.0622 27.484 25.5727 27.345 26.0318 27.0671C26.4959 26.7892 26.8647 26.4169 27.138 25.9502C27.4114 25.4782 27.548 24.9539 27.548 24.377C27.548 23.8055 27.4114 23.2863 27.138 22.8196C26.8647 22.3477 26.4959 21.9727 26.0318 21.6948C25.5727 21.4116 25.0622 21.2701 24.5 21.2701C23.9378 21.2701 23.4247 21.4116 22.9605 21.6948C22.5015 21.9727 22.1327 22.3477 21.8542 22.8196C21.5809 23.2863 21.4442 23.8055 21.4442 24.377C21.4442 24.9539 21.5809 25.4782 21.8542 25.9502C22.1327 26.4169 22.5015 26.7892 22.9605 27.0671C23.4247 27.345 23.9378 27.484 24.5 27.484ZM29.2345 21.4824C29.2345 21.215 29.3325 20.9816 29.5285 20.7824C29.7296 20.5779 29.9669 20.4756 30.2402 20.4756C30.5033 20.4756 30.7328 20.5779 30.9287 20.7824C31.1299 20.9816 31.2305 21.215 31.2305 21.4824C31.2305 21.7656 31.1299 22.0042 30.9287 22.1982C30.7328 22.3922 30.5033 22.4893 30.2402 22.4893C29.9669 22.4945 29.7296 22.4001 29.5285 22.2061C29.3325 22.0068 29.2345 21.7656 29.2345 21.4824Z" fill="white"/>
+            </svg>
+          </div>
+        </div>
+      </div>
 
       <!-- =================================== -->
       <!-- Status bar -->
@@ -215,10 +278,20 @@
 
     <div class="w-80 max-h-[80vh]">
 
+      <div class="flex items-center space-x-2 w-full bg-gray-700 bg-opacity-50 hover:bg-opacity-90 p-4 uppercase text-white text-left text-xs font-semibold opacity-50 select-none">
+        <span class="flex-1">Widgets</span>
+        <select bind:value={widgetType} class="bg-white border-0 px-2 py-1 text-gray-900 rounded">
+          <option value="none">None</option>
+          <option value="small">Small</option>
+          <option value="mixed">Mixed</option>
+        </select>
+      </div>
+
       {#each notifications as notification, index (notification.id)}
         <div transition:slide={{ duration: 200 }} animate:flip={{ duration: 200 }}>
           <NotificationForm
             bind:notification
+            index={index}
             isFirst={index == 0}
             isLast={index == notifications.length - 1}
             isFocused={focusedNotification == notification.id}

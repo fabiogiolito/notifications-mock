@@ -1,4 +1,14 @@
 @tailwind base;
 /* Write your global styles here, in PostCSS syntax */
 @tailwind components;
-@tailwind utilities
+@tailwind utilities;
+
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  @apply flex flex-col;
+}

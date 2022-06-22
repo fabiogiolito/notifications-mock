@@ -7,16 +7,19 @@
   import Input from "/src/components/Input.svelte";
   import File from "/src/components/File.svelte";
 
+  export let index = 0;
   export let notification;
   export let isFirst;
   export let isLast;
   export let isFocused;
+  export let stackable;
 
   let icon = notification.icon;
   let contact = notification.contact;
   let title = notification.title;
   let description = notification.description;
   let timeAgo = notification.timeAgo;
+  let appName = notification.appName;
   let isStacked = notification.isStacked;
 
   $: if (icon || icon === "") notification.icon = icon;
@@ -24,8 +27,8 @@
   $: if (title || title === "") notification.title = title;
   $: if (description || description === "") notification.description = description;
   $: if (timeAgo || timeAgo === "") notification.timeAgo = timeAgo;
-  $: if (isStacked || isStacked === false) notification.isStacked = isStacked;
-
+  $: if (isStacked || isStacked === "") notification.isStacked = isStacked;
+  $: if (appName || appName === "") notification.appName = appName;
 
   let appIcons = [
     "app_twitter.png",
@@ -68,17 +71,28 @@
   </div>
 
   {#if isFocused}
+    {#if index < 2}
     <div transition:slide class="p-4 pt-0 space-y-4">
+      <Input label="App name" bind:value={appName} />
       <Input label="Title" bind:value={title} multiline />
       <Input label="Description" bind:value={description} multiline />
       <Input label="Time ago" placeholder="now" bind:value={timeAgo} />
       <File label="App image" bind:image={icon} options={appIcons} uploadedImage={!appIcons.includes(icon) && icon} />
       <File label="Contact image" bind:image={contact} options={contactImages} css="rounded-full" uploadedImage={!contactImages.includes(contact) && contact} />
-      <label class="flex items-center space-x-2 select-none">
-        <input class="accent-yellow-500" type="checkbox" bind:checked={isStacked} />
-        <span>Stacked notification</span>
-      </label>
+
+      {#if stackable}
+        <label class="flex items-center space-x-2 select-none">
+          <input class="accent-yellow-500" type="checkbox" bind:checked={isStacked} />
+          <span>Stacked notification</span>
+        </label>
+      {/if}
+
     </div>
+    {:else}
+      <div transition:slide class="p-4 pt-0">
+        <Input label="App name" bind:value={appName} />
+      </div>
+    {/if}
   {/if}
 
 </div>
